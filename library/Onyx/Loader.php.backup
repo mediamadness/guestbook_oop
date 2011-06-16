@@ -1,0 +1,68 @@
+<?php
+    
+    class Onyx_Loader {
+        
+        /**
+         * @var array
+         */
+        private $_loadedClasses = array();
+        
+        /**
+         * @var Onyx_Loader
+         */
+        private static $_instance = null;
+        
+        /**
+         * constructor | set to private to prevent "new" from creating objects
+         */
+        private function __construct() {  }
+         
+        /**
+         * load class | instead of including via "include_once", "include" etc. 
+         *
+         * @param string $class
+         * @return void
+         */
+        public function load( $class ) {
+            
+            if( is_string( $class ) && '' != $class ) {
+                throw new Exception( 'Invalid Class String' );
+            }
+            
+            $tmp = explode( '_', $class );
+           
+            foreach( $tmp as $i => $part ) {
+                $part = strtolower( $part );
+                $tmp[$i] = ucfirst( $part );
+            }
+            
+            $class = implode( '_', $tmp );
+            $path = implode( DIRECTORY_SEPARATOR, $tmp ) . '.php';
+            
+            if( !in_array( $class, $this->_loadedClasses ) ) {
+                include( $path );
+                $this->_loadedClasses[] = $class;
+            }
+            
+        }
+        
+        /**
+         * singleton constructor
+         * 
+         * @return Onyx_Loader
+         */
+        public static getInstance(){
+            
+            if( null === self::$_instance ) {
+                self::$_instance = new Onyx_Loader();
+            }
+            
+            return self::$_instance;
+            
+        }
+        
+        public function classExists( $class ) {
+            
+        }
+        
+    }
