@@ -6,6 +6,5 @@
     // Classloader
     include_once('Onyx/Loader.php');
     
-    Onyx_Loader::getInstance()->load( 'Onyx_Route' );
-    
-    $route = new Onyx_Route();
+	Onyx_Loader::getInstance()->load( 'Onyx_Controller_Front' );
+	Onyx_Controller_Front::getInstance()->init();

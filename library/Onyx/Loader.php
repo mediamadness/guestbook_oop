@@ -54,9 +54,18 @@
             $formatedClass = $this->_normalizeClass( $class );
             
             if( !in_array( $formatedClass['class'], $this->_loadedClasses ) ) {
-                if( !file_exists( $formatedClass['path'] ) ) {
+            	$includePath = explode(PATH_SEPARATOR, ini_get('include_path') );
+				$exists = false;
+				foreach( $includePath as $path ) {
+					if( file_exists( $path . $formatedClass['path'] ) ) {
+						$exists = true;
+						break;
+					}
+				}
+                if( !$exists ) {
                 	throw new Exception( 'File does not exist: ' . $formatedClass['path'] );
                 }
+				
                 include( $formatedClass['path'] );
                 if( !class_exists( $formatedClass['class'] ) ) {
                     throw new Exception( 'File does not contain class ' . $formatedClass['class'] );
