@@ -25,7 +25,7 @@
          */
         private function _normalizeClass( $class ) {
             
-            if( is_string( $class ) && '' != $class ) {
+            if( !is_string( $class ) || '' == $class ) {
                 throw new Exception( 'Invalid Class String' );
             }
             
@@ -54,6 +54,9 @@
             $formatedClass = $this->_normalizeClass( $class );
             
             if( !in_array( $formatedClass['class'], $this->_loadedClasses ) ) {
+                if( !file_exists( $formatedClass['path'] ) ) {
+                	throw new Exception( 'File does not exist: ' . $formatedClass['path'] );
+                }
                 include( $formatedClass['path'] );
                 if( !class_exists( $formatedClass['class'] ) ) {
                     throw new Exception( 'File does not contain class ' . $formatedClass['class'] );
@@ -68,7 +71,7 @@
          * 
          * @return Onyx_Loader
          */
-        public static getInstance(){
+        public static function getInstance(){
             
             if( null === self::$_instance ) {
                 self::$_instance = new Onyx_Loader();
