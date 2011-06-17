@@ -23,7 +23,7 @@
          * @param string $class
          * @return array 
          */
-        private function formatClassName( $class ) {
+        private function _normalizeClass( $class ) {
             
             if( is_string( $class ) && '' != $class ) {
                 throw new Exception( 'Invalid Class String' );
@@ -51,11 +51,13 @@
          */
         public function load( $class ) {
            
-            $formatedClass = new array();
-            $formatedClass = $this->formatClassName( $class );
+            $formatedClass = $this->_normalizeClass( $class );
             
             if( !in_array( $formatedClass['class'], $this->_loadedClasses ) ) {
                 include( $formatedClass['path'] );
+                if( !class_exists( $formatedClass['class'] ) ) {
+                    throw new Exception( 'File does not contain class ' . $formatedClass['class'] );
+                }
                 $this->_loadedClasses[] = $formatedClass['class'];
             }
             
@@ -80,17 +82,17 @@
          * check if $class exists in filesystem
          *
          * @param string $class
-         * @return void
+         * @return boolean
          */
         public function classExists( $class ) {
             
-            $formatedClass = new array();
-            $formatedClass = $this->formatClassName( $class );
+            $formatedClass = $this->_normalizeClass( $class );
             
             if ( file_exists( $formatedClass['path'] ) ) {
-                
+                return true;
             }
             
+            return false;
             
         }
         

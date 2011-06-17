@@ -6,4 +6,6 @@
     // Classloader
     include_once('Onyx/Loader.php');
     
-    Onyx_Loader::getInstance()->load( 'Onyx_Bla' );
+    Onyx_Loader::getInstance()->load( 'Onyx_Route' );
+    
+    $route = new Onyx_Route();
