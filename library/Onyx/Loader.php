@@ -23,9 +23,9 @@
          * @param string $class
          * @return array 
          */
-        private function formatClassName( $class ) {
+        private function _normalizeClass( $class ) {
             
-            if( is_string( $class ) && '' != $class ) {
+            if( !is_string( $class ) || '' == $class ) {
                 throw new Exception( 'Invalid Class String' );
             }
             
@@ -51,11 +51,25 @@
          */
         public function load( $class ) {
            
-            $formatedClass = new array();
-            $formatedClass = $this->formatClassName( $class );
+            $formatedClass = $this->_normalizeClass( $class );
             
             if( !in_array( $formatedClass['class'], $this->_loadedClasses ) ) {
+            	$includePath = explode(PATH_SEPARATOR, ini_get('include_path') );
+				$exists = false;
+				foreach( $includePath as $path ) {
+					if( file_exists( $path . $formatedClass['path'] ) ) {
+						$exists = true;
+						break;
+					}
+				}
+                if( !$exists ) {
+                	throw new Exception( 'File does not exist: ' . $formatedClass['path'] );
+                }
+				
                 include( $formatedClass['path'] );
+                if( !class_exists( $formatedClass['class'] ) ) {
+                    throw new Exception( 'File does not contain class ' . $formatedClass['class'] );
+                }
                 $this->_loadedClasses[] = $formatedClass['class'];
             }
             
@@ -66,7 +80,7 @@
          * 
          * @return Onyx_Loader
          */
-        public static getInstance(){
+        public static function getInstance(){
             
             if( null === self::$_instance ) {
                 self::$_instance = new Onyx_Loader();
@@ -80,17 +94,17 @@
          * check if $class exists in filesystem
          *
          * @param string $class
-         * @return void
+         * @return boolean
          */
         public function classExists( $class ) {
             
-            $formatedClass = new array();
-            $formatedClass = $this->formatClassName( $class );
+            $formatedClass = $this->_normalizeClass( $class );
             
             if ( file_exists( $formatedClass['path'] ) ) {
-                
+                return true;
             }
             
+            return false;
             
         }
         
